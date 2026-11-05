@@ -1,0 +1,6 @@
+# IDE & Python temp files
+.vscode/
+.idea/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
