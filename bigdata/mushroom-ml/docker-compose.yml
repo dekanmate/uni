@@ -9,6 +9,5 @@ services:
         - JUPYTER_TOKEN=12345678
     volumes:
       - ./notebooks:/home/spark/
-      - ./data:/home/spark/data
     networks: []
     profiles: ["all", "jupyter"]
