@@ -1,0 +1,13 @@
+services:
+  jupyter:
+    build:
+        context: ./jupyter
+        dockerfile: Dockerfile
+    hostname: jupyter
+    ports: ["8888:8888"]
+    environment:
+        - JUPYTER_TOKEN=12345678
+    volumes:
+      - ./notebooks:/home/spark/
+    networks: []
+    profiles: ["all", "jupyter"]
