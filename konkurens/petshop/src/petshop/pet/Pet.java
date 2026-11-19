@@ -1,6 +1,7 @@
 package petshop.pet;
 
 import petshop.State;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Pet implements Runnable {
     protected String name;
@@ -41,20 +42,49 @@ public abstract class Pet implements Runnable {
     }
 
     public synchronized boolean select() {
-        // TODO: csak az első kiválasztáskor adjunk vissza igaz értéket
+        if (!isSelected()) {
+            isSelected = true;
+            return true;
+        }
         return false;
     }
 
     @Override
     public void run() {
-        // TODO: 1. módosítsuk az állapotot és a szükségleteket
-        // TODO: 2. várjunk 2-5 másodpercet (Thread.sleep + ThreadLocalRandom)
-        // TODO: 3. kezeljük a megszakítást és a leállást
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                // 1. módosítsuk az állapotot és a szükségleteket
+                changeRandomly();
+                // 2. várjunk 2-5 másodpercet (Thread.sleep + ThreadLocalRandom)
+                Thread.sleep(getRandomSec(2, 5));
+            }
+        } catch (InterruptedException e) {
+            // 3. kezeljük a megszakítást és a leállást
+            System.out.println(String.format("%s elaludt", getName(), getAge()));
+        }
     }
 
     @Override
     public String toString() {
-        // TODO: jelenítsük meg a nevet és az életkort
-        return "";
+        return String.format("%s - %d éves", getName());
+    }
+
+    private static int getRandomSec(int from, int to) {
+        return ThreadLocalRandom.current().nextInt(from * 1000, to * 1000 + 1);
+    }
+
+    private static boolean getRandomBool() {
+        return ThreadLocalRandom.current().nextBoolean();
+    }
+
+    private static State getRandomState() {
+        State[] all = State.values();
+        return all[ThreadLocalRandom.current().nextInt(all.length)];
+    }
+
+    private synchronized void changeRandomly() {
+        this.state = getRandomState();
+        this.needsFood = getRandomBool();
+        this.needsWater = getRandomBool();
     }
 }
