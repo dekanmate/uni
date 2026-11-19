@@ -1,10 +1,12 @@
-# IDE & Python temp files
+# IDE & temp files
 .vscode/
 .idea/
 __pycache__/
 .ipynb_checkpoints/
 *.pyc
 .venv/
+*/gyak
+.class
 
 # Project specific data and output
 
