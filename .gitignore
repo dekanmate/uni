@@ -6,7 +6,7 @@ __pycache__/
 *.pyc
 .venv/
 */gyak
-.class
+*.class
 
 # Project specific data and output
 
