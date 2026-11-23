@@ -9,9 +9,18 @@ public class Cashier implements Runnable {
 
     @Override
     public void run() {
-        // TODO: 1. ismételjük a műveleteket, amíg meg nem szakítják a szálat
-        // TODO: 2. vegyük ki a következő fizetési kérelmet a boltból (blokkoló művelet)
-        // TODO: 3. dolgozzuk fel a petShop.processCheckout() segítségével
-        // TODO: 4. InterruptedException esetén álljunk le (állítsuk vissza a megszakításjelzőt)
+        // 1. ismételjük a műveleteket, amíg meg nem szakítják a szálat
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                // 2. vegyük ki a következő fizetési kérelmet a boltból (blokkoló művelet)
+                CheckoutRequest request = petShop.getNextCheckout();
+                // 3. dolgozzuk fel a petShop.processCheckout() segítségével
+                petShop.processCheckout(request);
+            }
+        } catch (InterruptedException e) {
+            // 4. InterruptedException esetén álljunk le (állítsuk vissza a megszakításjelzőt)
+            Thread.currentThread().interrupt();
+            System.out.println("Pénztáros leáll.");
+        }
     }
 }
