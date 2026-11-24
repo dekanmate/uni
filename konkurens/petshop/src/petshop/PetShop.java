@@ -2,6 +2,8 @@ package petshop;
 
 import petshop.pet.Pet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -21,42 +23,54 @@ public class PetShop {
     }
 
     public void addPet(Pet pet) {
-        // TODO: adjuk hozzá az állatot a pets sorhoz
+        // adjuk hozzá az állatot a pets sorhoz
+        pets.add(pet);
     }
 
     public Pet getRandomPet() {
-        // TODO: adjunk vissza egy véletlenszerű állatot, vagy null-t, ha nincs elérhető állat
-        return null;
+        // adjunk vissza egy véletlenszerű állatot, vagy null-t, ha nincs elérhető állat
+        List<Pet> available = new ArrayList<>();
+        for (Pet pet : pets) {
+            if (!pet.isSelected()) {
+                available.add(pet);
+            }
+        }
+        return Utils.getRandomPetFromList(available);
     }
 
     public void enterShop() {
-        // TODO: növeljük a látogatók számát
+        // növeljük a látogatók számát
+        currentVisitors.incrementAndGet();
     }
 
     public void leaveShop() {
-        // TODO: csökkentsük a látogatók számát
+        // csökkentsük a látogatók számát
+        currentVisitors.decrementAndGet();
     }
 
     public int getCurrentVisitors() {
-        // TODO: adjuk vissza az aktuális látogatók számát
-        return 0;
+        // adjuk vissza az aktuális látogatók számát
+        return currentVisitors.get();
     }
 
-    public void goToCheckout(CheckoutRequest request)
-            throws InterruptedException {
-        // TODO: adjuk hozzá a fizetési kérelmet a blokkoló sorhoz
+    public void goToCheckout(CheckoutRequest request) throws InterruptedException {
+        // adjuk hozzá a fizetési kérelmet a blokkoló sorhoz
+        checkoutQueue.put(request);
     }
 
-    public CheckoutRequest getNextCheckout()
-            throws InterruptedException {
-        // TODO: kérjük le a következő fizetési kérelmet
-        return null;
+    public CheckoutRequest getNextCheckout() throws InterruptedException {
+        // kérjük le a következő fizetési kérelmet
+        return checkoutQueue.take();
     }
 
     public synchronized void processCheckout(CheckoutRequest request) {
-        // TODO: 1. határozzuk meg az állat árát
-        // TODO: 2. frissítsük a bevételt
-        // TODO: 3. írjuk ki a tranzakció adatait
+        // 1. határozzuk meg az állat árát
+        int price = request.getPet().getPrice();
+        // 2. frissítsük a bevételt
+        revenue += price;
+        // 3. írjuk ki a tranzakció adatait
+        System.out.println(String.format("\nEgy állatot megvásároltak:\nÁllat neve: %s\nÁra: %d\nVásárló: %s\n\nEddigi napi bevétel: %d", request.getPet().getName(), price, request.getParent().getName(), getRevenue()));
+        request.getParent().paymentCompleted();
     }
 
     public synchronized int getRevenue() {
