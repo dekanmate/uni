@@ -1,6 +1,7 @@
 package petshop.customer;
 
 import petshop.pet.Pet;
+import petshop.Utils;
 
 public class Child extends Customer {
     private Parent parent;
@@ -13,15 +14,34 @@ public class Child extends Customer {
     @Override
     public void run() {
         try {
-            // TODO: 1. lépjen be a boltba
-            // TODO: 2. nézelődjön 1-3 másodpercig
-            // TODO: 3. válasszon egy elérhető állatot
+            // 1. lépjen be a boltba
+            petShop.enterShop();
+            // 2. nézelődjön 1-3 másodpercig
+            Thread.sleep(Utils.getRandomSec(1, 3));
+            // 3. válasszon egy elérhető állatot
             Pet selectedPet = null;
-            // TODO: 4. sikeres választás esetén: parent.addSelectedPet(selectedPet);
+            do {
+                Pet choice = petShop.getRandomPet();
+                if (choice != null && choice.select()) {
+                    selectedPet = choice;
+                } else {
+                    Thread.sleep(100);
+                }
+            } while (selectedPet == null);
+            // 4. sikeres választás esetén
+            parent.addSelectedPet(selectedPet);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } finally {
-            // TODO: 5. jelezze a szülőnek, hogy befejezte a választást
-            // TODO: 6. várja meg, amíg a szülő engedélyezi a család távozását
-            // TODO: 7. lépjen ki a boltból
+            // 5. jelezze a szülőnek, hogy befejezte a választást
+            // 6. várja meg, amíg a szülő engedélyezi a család távozását
+            try {
+                parent.awaitFamilyFinished();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            // 7. lépjen ki a boltból
+            petShop.leaveShop();
         }
     }
 }
