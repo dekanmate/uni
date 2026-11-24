@@ -1,6 +1,7 @@
 package petshop.pet;
 
 import petshop.State;
+import petshop.Utils;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Pet implements Runnable {
@@ -56,7 +57,7 @@ public abstract class Pet implements Runnable {
                 // 1. módosítsuk az állapotot és a szükségleteket
                 changeRandomly();
                 // 2. várjunk 2-5 másodpercet (Thread.sleep + ThreadLocalRandom)
-                Thread.sleep(getRandomSec(2, 5));
+                Thread.sleep(Utils.getRandomSec(2, 5));
             }
         } catch (InterruptedException e) {
             // 3. kezeljük a megszakítást és a leállást
@@ -69,22 +70,9 @@ public abstract class Pet implements Runnable {
         return String.format("%s - %d éves", getName());
     }
 
-    private static int getRandomSec(int from, int to) {
-        return ThreadLocalRandom.current().nextInt(from * 1000, to * 1000 + 1);
-    }
-
-    private static boolean getRandomBool() {
-        return ThreadLocalRandom.current().nextBoolean();
-    }
-
-    private static State getRandomState() {
-        State[] all = State.values();
-        return all[ThreadLocalRandom.current().nextInt(all.length)];
-    }
-
     private synchronized void changeRandomly() {
-        this.state = getRandomState();
-        this.needsFood = getRandomBool();
-        this.needsWater = getRandomBool();
+        this.state = Utils.getRandomState();
+        this.needsFood = Utils.getRandomBool();
+        this.needsWater = Utils.getRandomBool();
     }
 }
