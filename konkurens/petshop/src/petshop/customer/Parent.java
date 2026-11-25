@@ -24,6 +24,27 @@ public class Parent extends Customer {
         this.paymentDone = new CountDownLatch(numberOfChildren);
     }
 
+    private List<Pet> waitForChildren() throws InterruptedException {
+        List<Pet> pets = new ArrayList<>();
+        for (int i = 0; i < numberOfChildren; i++) {
+            pets.add(selectedPets.take());
+        }
+        return pets;
+    }
+
+    private void payForPets(List<Pet> pets) throws InterruptedException {
+        for (Pet pet : pets) {
+            petShop.goToCheckout(new CheckoutRequest(this, pet));
+        }
+        paymentDone.await();
+    }
+
+    private void goHome() throws InterruptedException {
+        for (int i = 0; i < numberOfChildren; i++) {
+            familyFinished.put(true);
+        }
+    }
+
     public void paymentCompleted() {
         // a pénztár jelzi, hogy egy fizetést feldolgozott
         paymentDone.countDown();
@@ -41,27 +62,16 @@ public class Parent extends Customer {
 
     @Override
     public void run() {
-
-        List<Pet> pets = new ArrayList<>();
-
         // 1. lépjünk be a boltba
         petShop.enterShop();
         try {
             // 2. várjuk meg, amíg minden gyerek befejezi a választást
             // 3. kérjük le a kiválasztott állatokat
-            for (int i = 0; i < numberOfChildren; i++) {
-                pets.add(selectedPets.take());
-            }
-            // 4. küldjük el a fizetési kérelmeket
-            for (Pet pet : pets) {
-                petShop.goToCheckout(new CheckoutRequest(this, pet));
-            }
-            // várjuk meg, amíg a pénztár minden fizetést feldolgozott
-            paymentDone.await();
+            List<Pet> pets = waitForChildren();
+            // 4. küldjük el a fizetési kérelmeket, és várjuk meg, amíg a pénztár mindet feldolgozta
+            payForPets(pets);
             // 5. jelezzük a gyerekeknek, hogy indulhatnak haza
-            for (int i = 0; i < numberOfChildren; i++) {
-                familyFinished.put(true);
-            }
+            goHome();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {

@@ -2,7 +2,6 @@ package petshop.pet;
 
 import petshop.State;
 import petshop.Utils;
-import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Pet implements Runnable {
     protected String name;
@@ -61,13 +60,13 @@ public abstract class Pet implements Runnable {
             }
         } catch (InterruptedException e) {
             // 3. kezeljük a megszakítást és a leállást
-            System.out.println(String.format("%s elaludt", getName(), getAge()));
+            Thread.currentThread().interrupt();
         }
     }
 
     @Override
     public String toString() {
-        return String.format("%s - %d éves", getName());
+        return String.format("%s - %d éves", getName(), getAge());
     }
 
     private synchronized void changeRandomly() {

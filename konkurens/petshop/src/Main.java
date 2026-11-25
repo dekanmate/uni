@@ -68,24 +68,18 @@ public class Main {
             try {
                 future.get();
             } catch (InterruptedException e) {
-                // a main szálat szakították meg, miközben várt
                 Thread.currentThread().interrupt();
             } catch (ExecutionException e) {
-                // a vásárló feladata (run()) kivétellel állt le
-                System.out.println("Hiba egy vásárlói feladatban: " + e.getCause());
+                // vásárló feladat kivétel
             }
         }
 
         // 7. shutdownNow()
         executor.shutdownNow();
 
-        // TODO: 8. awaitTermination()
+        // 8. awaitTermination()
         try {
-            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
-                System.out.println("Nem állt le minden feladat időben!");
-            } else {
-                System.out.println("Minden feladat leállt.");
-            }
+            executor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

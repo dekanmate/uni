@@ -20,7 +20,6 @@ public class Cashier implements Runnable {
         } catch (InterruptedException e) {
             // 4. InterruptedException esetén álljunk le (állítsuk vissza a megszakításjelzőt)
             Thread.currentThread().interrupt();
-            System.out.println("Pénztáros leáll.");
         }
     }
-}
+}

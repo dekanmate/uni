@@ -11,6 +11,19 @@ public class Child extends Customer {
         this.parent = parent;
     }
 
+    private Pet choosePet() throws InterruptedException {
+        Pet selectedPet = null;
+        do {
+            Pet choice = petShop.getRandomPet();
+            if (choice != null && choice.select()) {
+                selectedPet = choice;
+            } else {
+                Thread.sleep(100);
+            }
+        } while (selectedPet == null);
+        return selectedPet;
+    }
+
     @Override
     public void run() {
         try {
@@ -19,15 +32,7 @@ public class Child extends Customer {
             // 2. nézelődjön 1-3 másodpercig
             Thread.sleep(Utils.getRandomSec(1, 3));
             // 3. válasszon egy elérhető állatot
-            Pet selectedPet = null;
-            do {
-                Pet choice = petShop.getRandomPet();
-                if (choice != null && choice.select()) {
-                    selectedPet = choice;
-                } else {
-                    Thread.sleep(100);
-                }
-            } while (selectedPet == null);
+            Pet selectedPet = choosePet();
             // 4. sikeres választás esetén
             parent.addSelectedPet(selectedPet);
         } catch (InterruptedException e) {
@@ -44,4 +49,4 @@ public class Child extends Customer {
             petShop.leaveShop();
         }
     }
-}
+}
